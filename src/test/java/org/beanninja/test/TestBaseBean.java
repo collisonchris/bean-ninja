@@ -8,6 +8,8 @@ import org.beanninja.testobjects.Employee;
 import org.beanninja.testobjects.EmployeeType;
 import org.junit.Test;
 
+import com.google.common.collect.Maps;
+
 
 public class TestBaseBean {
     
@@ -17,5 +19,18 @@ public class TestBaseBean {
         
         Map<String, String> map = emp.getAsMap(); 
         assertEquals("Should be 5 entries!",5,map.size());
+    }
+    
+    @Test public void testBaseBeanFromMap() throws Exception {
+        Map<String, String> map = Maps.newHashMap();
+        map.put("lastName", "Johnson");
+        map.put("firstName", "Joe");
+        map.put("lastName", "Johnson");
+        
+        Employee newEmp = new Employee();
+        newEmp.setFromMap(map, false);
+        //assertEquals("Should be 3 entries!",3,map.size());
+        assertEquals("First name should be copied","Joe",newEmp.getFirstName());
+        assertEquals("Last name should be copied","Johnson",newEmp.getLastName());
     }
 }

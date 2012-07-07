@@ -6,15 +6,19 @@ public class Employee extends BaseBean {
     private Long employeeId;
     private String firstName;
     private String middleName;
-    private String lastame;
+    private String lastName;
     private EmployeeType empType;
     
-    public Employee(Long employeeId, String firstName, String middleName, String lastame, EmployeeType empType) {
+    public Employee() {
+        
+    }
+    
+    public Employee(Long employeeId, String firstName, String middleName, String lastName, EmployeeType empType) {
         super();
         this.employeeId = employeeId;
         this.firstName = firstName;
         this.middleName = middleName;
-        this.lastame = lastame;
+        this.lastName = lastName;
         this.empType = empType;
         
     }
@@ -36,11 +40,11 @@ public class Employee extends BaseBean {
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
     }
-    public String getLastame() {
-        return lastame;
+    public String getLastName() {
+        return lastName;
     }
-    public void setLastame(String lastame) {
-        this.lastame = lastame;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
     public EmployeeType getEmpType() {
         return empType;
