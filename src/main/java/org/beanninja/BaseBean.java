@@ -34,7 +34,6 @@ public class BaseBean {
     public Map<String, String> getAsMap() {
         Map<String, String> entityMap = Maps.newTreeMap();       
         try {
-            
             for (PropertyDescriptor prop: propertyCache.get(this.getClass())) {
                 String property = prop.getName();
 
@@ -64,8 +63,7 @@ public class BaseBean {
         }
         return false;
     }
-    
-    
+
     public void setFromMap(final Map<String, String> map, boolean update) throws Exception {
         Map<String, String> copy = Maps.newHashMap();
         copy.putAll(map);
@@ -77,7 +75,6 @@ public class BaseBean {
                 Entry<String, String> entry = iterator.next();
                 String key = entry.getKey();
                 String value = entry.getValue();
-
                 try {
                     Method setMethod = findSetMethod(key);           
                     if (setMethod != null) {
@@ -85,13 +82,11 @@ public class BaseBean {
                         if (update || StringUtils.isNotEmpty(value)) {
                             Object convertedValue = ConvertUtils.convert(value, field.getType());
                             setMethod.invoke(this, convertedValue);
-                            //field.set(this, convertedValue);
                         }
                         iterator.remove();
                     }
                 }
                 catch (Exception e) {
-                    //probably a conversion error
                     throw new RuntimeException(e);
                 }
             }

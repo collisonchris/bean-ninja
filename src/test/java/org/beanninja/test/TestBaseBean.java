@@ -25,11 +25,10 @@ public class TestBaseBean {
         Map<String, String> map = Maps.newHashMap();
         map.put("lastName", "Johnson");
         map.put("firstName", "Joe");
-        map.put("lastName", "Johnson");
         
         Employee newEmp = new Employee();
         newEmp.setFromMap(map, false);
-        //assertEquals("Should be 3 entries!",3,map.size());
+
         assertEquals("First name should be copied","Joe",newEmp.getFirstName());
         assertEquals("Last name should be copied","Johnson",newEmp.getLastName());
     }
