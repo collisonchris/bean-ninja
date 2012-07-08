@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class BaseBean {
                 } else {
                     field = this.getClass().getDeclaredField(property);
                     Object obj = prop.getReadMethod().invoke(this);
-                    if(java.util.Date.class.isAssignableFrom(field.getType())){//custom handling for dates, other types filterable as well
+                    if(java.sql.Date.class.isAssignableFrom(field.getType())){//custom handling for dates, other types filterable as well
                         entityMap.put(property, fmt.format((Date) obj));
                     } else {
                         entityMap.put(property, ConvertUtils.convert(obj));
@@ -57,7 +57,9 @@ public class BaseBean {
     }
     
     private boolean isBlacklistedProperty(String propName){
-        if(propertyBlackList.contains(propName)) return true;
+        if(propertyBlackList.contains(propName)) {
+            return true;
+        }
         return false;
     }
     private boolean isBlacklistedPackage(String className) {
@@ -75,28 +77,23 @@ public class BaseBean {
         
         Iterator<Entry<String, String>> iterator = copy.entrySet().iterator();
         Field field;
-        try {
-            while (iterator.hasNext()) {
-                Entry<String, String> entry = iterator.next();
-                String key = entry.getKey();
-                String value = entry.getValue();
-                try {
-                    Method setMethod = findSetMethod(key);           
-                    if (setMethod != null) {
-                        field = this.getClass().getDeclaredField(key);
-                        if (update || StringUtils.isNotEmpty(value)) {
-                            Object convertedValue = ConvertUtils.convert(value, field.getType());
-                            setMethod.invoke(this, convertedValue);
-                        }
-                        iterator.remove();
+        while (iterator.hasNext()) {
+            Entry<String, String> entry = iterator.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            try {
+                Method setMethod = findSetMethod(key);           
+                if (setMethod != null) {
+                    field = this.getClass().getDeclaredField(key);
+                    if (update || StringUtils.isNotEmpty(value)) {
+                        Object convertedValue = ConvertUtils.convert(value, field.getType());
+                        setMethod.invoke(this, convertedValue);
                     }
+                    iterator.remove();
                 }
-                catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
