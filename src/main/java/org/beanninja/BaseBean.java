@@ -3,10 +3,11 @@ package org.beanninja;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -25,23 +26,27 @@ import com.google.common.collect.Sets;
 
 public class BaseBean {
     @SuppressWarnings("rawtypes")
-    private static LoadingCache<Class, List<PropertyDescriptor>> propertyCache=CacheBuilder.newBuilder().build(CacheLoader.from(new PropertyDescriptorLookup()));
-    @SuppressWarnings("rawtypes")
-    private static LoadingCache<Class, HashMap<String,PropertyDescriptor>> propertyHash=CacheBuilder.newBuilder().build(CacheLoader.from(new PropertyDescriptorHashLookup()));
+    private static LoadingCache<Class, HashMap<String,PropertyDescriptor>> propertyCache=CacheBuilder.newBuilder().build(CacheLoader.from(new PropertyDescriptorLookup()));
     private static Set<String> propertyBlackList = Sets.newHashSet("class","asMap");
     private static Set<String> packageBlackList = Sets.newHashSet("java.util.");
+    private DateFormat fmt = new SimpleDateFormat("MM/dd/yyyy");
     
     public Map<String, String> getAsMap() {
-        Map<String, String> entityMap = Maps.newTreeMap();       
+        Map<String, String> entityMap = Maps.newTreeMap(); 
+        Field field;
         try {
-            for (PropertyDescriptor prop: propertyCache.get(this.getClass())) {
-                String property = prop.getName();
-
+            for (PropertyDescriptor prop: propertyCache.get(this.getClass()).values()) {
+                String property = prop.getName();            
                 if (isBlacklistedProperty(property) || isBlacklistedPackage(prop.getPropertyType().getName())) {
                     continue;//skip blacklisted entries
                 } else {
+                    field = this.getClass().getDeclaredField(property);
                     Object obj = prop.getReadMethod().invoke(this);
-                    entityMap.put(property, ConvertUtils.convert(obj));
+                    if(java.util.Date.class.isAssignableFrom(field.getType())){//custom handling for dates, other types filterable as well
+                        entityMap.put(property, fmt.format((Date) obj));
+                    } else {
+                        entityMap.put(property, ConvertUtils.convert(obj));
+                    } 
                 }
             }
             return entityMap;
@@ -98,7 +103,7 @@ public class BaseBean {
     private Method findSetMethod(String key) throws ExecutionException {
         PropertyDescriptor pDesc = null;
         try {
-            pDesc = propertyHash.get(this.getClass()).get(key);
+            pDesc = propertyCache.get(this.getClass()).get(key);
         } catch (ExecutionException e) {
             throw e;
         }
@@ -106,14 +111,7 @@ public class BaseBean {
     }
     
     @SuppressWarnings("rawtypes")
-    private static class PropertyDescriptorLookup implements Function<Class, List<PropertyDescriptor>> {
-        public List<PropertyDescriptor> apply(Class clazz) {
-            return Arrays.asList(PropertyUtils.getPropertyDescriptors(clazz));
-        }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private static class PropertyDescriptorHashLookup implements Function<Class, HashMap<String,PropertyDescriptor>> {
+    private static class PropertyDescriptorLookup implements Function<Class, HashMap<String,PropertyDescriptor>> {
         public HashMap<String,PropertyDescriptor> apply(Class clazz) {
             HashMap<String,PropertyDescriptor> map = Maps.newHashMap();
             for(PropertyDescriptor pDesc: PropertyUtils.getPropertyDescriptors(clazz)) {
