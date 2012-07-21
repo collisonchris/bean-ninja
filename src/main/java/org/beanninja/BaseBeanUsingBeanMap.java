@@ -9,16 +9,8 @@ public class BaseBeanUsingBeanMap {
     @SuppressWarnings("unchecked")
     public Map<String, String> asMap() {
         BeanMap beanMap = new BeanMap(this);
-        Map<String, String> map = new HashMap<String, String>();
-        for (Object o : beanMap.entrySet()) { // It's not parameterized :(
-            Map.Entry<String, Object> entry = (Map.Entry<String, Object>) o;
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if(!"class".equals(key)){//filter class out of the map
-                map.put(key, value != null ? String.valueOf(value) : null);
-            }
-            
-        }
+        Map<String, String> map = new HashMap<String, String>(beanMap);
+        map.remove("class");//filter class out of the map
         return map;
     }
     
