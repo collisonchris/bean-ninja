@@ -8,8 +8,7 @@ import org.apache.commons.beanutils.BeanMap;
 public class BaseBeanUsingBeanMap {
     @SuppressWarnings("unchecked")
     public Map<String, String> asMap() {
-        BeanMap beanMap = new BeanMap(this);
-        Map<String, String> map = new HashMap<String, String>(beanMap);
+        Map<String, String> map = new HashMap<String, String>(new BeanMap(this));
         map.remove("class");//filter class out of the map
         return map;
     }
