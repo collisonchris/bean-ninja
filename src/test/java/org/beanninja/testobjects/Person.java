@@ -5,10 +5,12 @@ import java.util.Date;
 import org.beanninja.BaseBeanUsingBeanMap;
 
 public class Person extends BaseBeanUsingBeanMap {
+    private Integer personId;
     private String firstName;
     private String lastName;
     private boolean deceased;
     private Date dateOfBirth;
+    
       
     public Person() {
         super();
@@ -20,6 +22,12 @@ public class Person extends BaseBeanUsingBeanMap {
         this.deceased = deceased;
         this.dateOfBirth = dateOfBirth;
     }
+    public Integer getPersonId() {
+        return personId;
+    }
+    public void setPersonId(Integer personId) {
+        this.personId = personId;
+    } 
     public String getFirstName() {
         return firstName;
     }
@@ -43,5 +51,5 @@ public class Person extends BaseBeanUsingBeanMap {
     }
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    } 
+    }
 }

@@ -40,16 +40,17 @@ public class TestBaseBean {
     
     @Test public void testBeanMapGet() throws ParseException {
         Person person = new Person("George", "Washington", true, df.parse("02/22/1732"));
-        Map<String, String> map = person.asMap();
-        assertEquals("Should be 4 entries!",4,map.size());
+        Map<String, Object> map = person.asMap();
+        assertEquals("Should be 4 entries!",5,map.size());
     }
     
     @Test public void testBeanMapSet() throws ParseException {
-        Map<String, String> map = Maps.newHashMap();
+        Map<String, Object> map = Maps.newHashMap();
         map.put("lastName", "Johnson");
         map.put("firstName", "Joe");
-        map.put("deceased", "false");
+        map.put("deceased", Boolean.FALSE);
         map.put("dateOfBirth", "09/12/1912");
+        map.put("personId", 4);
         
         Person person = new Person();
         person.fromMap(map);
@@ -58,5 +59,6 @@ public class TestBaseBean {
         assertEquals("Last name should be copied","Johnson",person.getLastName());
         assertEquals("Deceased should be copied",false,person.isDeceased());
         assertEquals("Date of Birth should be copied",df.parse("09/12/1912"),person.getDateOfBirth());
+        assertEquals("PersonId should be copied!", (Integer)4, person.getPersonId());
     }
 }
